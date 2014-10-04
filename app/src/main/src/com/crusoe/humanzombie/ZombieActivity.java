@@ -64,7 +64,7 @@ public class ZombieActivity extends LocationActivity implements AnimatorListener
 	}
 @Override
 
-protected void onResume() {
+public void onResume() {
 
     super.onResume();
     // for the system's orientation sensor registered listeners
