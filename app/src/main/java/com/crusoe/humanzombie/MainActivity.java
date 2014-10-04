@@ -16,13 +16,14 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseTwitterUtils;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.List;
 
 
 public class MainActivity extends Activity {
 
-    ParseUser user;
+    ParseUser userObject;
     ParseGeoPoint geo;
 
     @Override
@@ -32,7 +33,7 @@ public class MainActivity extends Activity {
 
         ParseAnalytics.trackAppOpened(getIntent());
 
-        user = ParseUser.getCurrentUser();
+        userObject = ParseUser.getCurrentUser();
 
         List<String> subscribedChannels = ParseInstallation.getCurrentInstallation().getList("channels");
 
@@ -52,11 +53,11 @@ public class MainActivity extends Activity {
         geo = new ParseGeoPoint(latitude, longitude);
 
         //geo = user.getParseGeoPoint("location");
-        user.put("location", geo);
-        user.saveEventually();
+        userObject.put("location", geo);
+        userObject.saveEventually();
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("location");
-        query.whereNear("location", geo);
+        query.whereWithinMiles("location", geo, 0.5);
         query.setLimit(10);
         query.findInBackground(new FindCallback<ParseObject>() {
 
@@ -75,18 +76,16 @@ public class MainActivity extends Activity {
 
 
     public void authTwitter() {
-        ParseTwitterUtils.logIn(this, new LogInCallback() {
-            @Override
-            public void done(ParseUser user, ParseException err) {
-                if (user == null) {
-                    Log.d("TwitterAuth", "Uh oh. The user cancelled the Twitter login.");
-                } else if (user.isNew()) {
-                    Log.d("TwitterAuth", "User signed up and logged in through Twitter!");
-                } else {
-                    Log.d("TwitterAuth", "User logged in through Twitter!");
+        if (!ParseTwitterUtils.isLinked(userObject)) {
+            ParseTwitterUtils.link(userObject, this, new SaveCallback() {
+                @Override
+                public void done(ParseException ex) {
+                    if (ParseTwitterUtils.isLinked(userObject)) {
+                        Log.d("TwitterAuth", "User logged in with Twitter!");
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
 
