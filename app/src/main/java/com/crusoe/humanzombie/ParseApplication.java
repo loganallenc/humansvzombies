@@ -6,6 +6,7 @@ import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseInstallation;
 import com.parse.ParsePush;
+import com.parse.ParseTwitterUtils;
 import com.parse.ParseUser;
 
 public class ParseApplication extends Application {
@@ -31,5 +32,7 @@ public class ParseApplication extends Application {
         ParseInstallation installation = ParseInstallation.getCurrentInstallation();
         installation.put("user", ParseUser.getCurrentUser());
         installation.saveInBackground();
+
+        ParseTwitterUtils.initialize("0bfxloQjcnVxREzhnfXBDymrG", "YZIIS1u3CC4yhwGFuxwzqLiuWV5tXwKYSsh5rlCM3rLMZus8l8");
     }
 }
