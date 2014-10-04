@@ -13,7 +13,6 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
-import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseTwitterUtils;
 import com.parse.ParseUser;
@@ -42,6 +41,7 @@ public class MainActivity extends Activity {
         }
 
         nearMe();
+        authTwitter();
     }
 
     public void nearMe() {
@@ -71,9 +71,6 @@ public class MainActivity extends Activity {
                 }
             }
         });
-
-        //ParseLoginBuilder builder = new ParseLoginBuilder(MainActivity.this);
-        //startActivityForResult(builder.build(), 0);
     }
 
 
