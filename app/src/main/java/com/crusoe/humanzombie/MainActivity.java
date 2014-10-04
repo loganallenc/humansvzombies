@@ -6,14 +6,23 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.parse.FindCallback;
 import com.parse.ParseAnalytics;
+import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseInstallation;
+import com.parse.ParseObject;
 import com.parse.ParsePush;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.List;
 
 
 public class MainActivity extends Activity {
+
+    ParseUser user;
+    ParseGeoPoint geo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,12 +31,44 @@ public class MainActivity extends Activity {
 
         ParseAnalytics.trackAppOpened(getIntent());
 
+        user = ParseUser.getCurrentUser();
+
         List<String> subscribedChannels = ParseInstallation.getCurrentInstallation().getList("channels");
 
         for (String i : subscribedChannels) {
             Log.d("channels", i);
-            //Log.d("", subscribedChannels.get(i));
         }
+
+        nearMe();
+    }
+
+    public void nearMe() {
+        GPSTracker gps = new GPSTracker(this);
+        double latitude = gps.getLatitude();
+        double longitude = gps.getLongitude();
+
+        geo = new ParseGeoPoint(latitude, longitude);
+
+        //geo = user.getParseGeoPoint("location");
+        user.put("location", geo);
+        user.saveEventually();
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("location");
+        query.whereNear("location", geo);
+        query.setLimit(10);
+        query.findInBackground(new FindCallback<ParseObject>() {
+
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if (e == null) {
+                    for (ParseObject p : parseObjects) {
+                        Log.d("near", p.getObjectId());
+                    }
+                } else {
+                    System.out.println(e);
+                }
+            }
+        });
     }
 
 

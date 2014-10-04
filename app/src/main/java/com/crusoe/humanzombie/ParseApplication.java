@@ -9,7 +9,6 @@ import com.parse.ParsePush;
 import com.parse.ParseUser;
 
 public class ParseApplication extends Application {
-
     @Override
     public void onCreate() {
         super.onCreate();
