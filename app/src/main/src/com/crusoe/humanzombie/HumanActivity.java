@@ -26,7 +26,7 @@ public class HumanActivity extends LocationActivity implements AnimatorListener,
 	FrameLayout mainScreen;
 	GestureDetector gestureDetector;
 	View.OnTouchListener gestureListener;
-
+ImageView projectile;
 	View.OnTouchListener gestureListener1;
 	  private SensorManager mSensorManager;
 
@@ -44,11 +44,18 @@ public class HumanActivity extends LocationActivity implements AnimatorListener,
 		// gestureListener1 = new TouchListener(mainScreen);
 
 		// flingObj.setOnTouchListener(gestureListener1);
-
+projectile =  (ImageView) findViewById(R.id.flingobject);
+projectile.setVisibility(View.GONE);
 		flingObj.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(final View view, final MotionEvent event) {
-				gestureDetector.onTouchEvent(event);
+				//gestureDetector.onTouchEvent(event);
+				
+				ObjectAnimator flingAnimatorY = ObjectAnimator.ofFloat(
+						flingObj, "translationY", originalY, originalY + 500 * 10);
+				flingAnimatorY.setDuration(1000);
+				flingAnimatorY.addListener(HumanActivity.this);
+				flingAnimatorY.start();
 				return true;
 			}
 			

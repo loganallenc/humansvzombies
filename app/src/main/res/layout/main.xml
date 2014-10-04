@@ -4,7 +4,13 @@
     android:layout_height="fill_parent"
     android:id="@+id/mainscreen">
  
-
+   <ImageView
+        android:id="@+id/projectile"
+       android:layout_gravity="center_vertical|center_horizontal"
+        android:src="@drawable/bullet"
+        android:layout_width="250dp"
+          android:layout_height="250dp"
+        tools:context=".MainActivity" />
     <ImageView
         android:id="@+id/flingobject"
        android:layout_gravity="center_vertical|center_horizontal"
