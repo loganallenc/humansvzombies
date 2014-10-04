@@ -7,13 +7,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.parse.FindCallback;
+import com.parse.LogInCallback;
 import com.parse.ParseAnalytics;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
-import com.parse.ParsePush;
 import com.parse.ParseQuery;
+import com.parse.ParseTwitterUtils;
 import com.parse.ParseUser;
 
 import java.util.List;
@@ -40,6 +41,7 @@ public class MainActivity extends Activity {
         }
 
         nearMe();
+        authTwitter();
     }
 
     public void nearMe() {
@@ -66,6 +68,22 @@ public class MainActivity extends Activity {
                     }
                 } else {
                     System.out.println(e);
+                }
+            }
+        });
+    }
+
+
+    public void authTwitter() {
+        ParseTwitterUtils.logIn(this, new LogInCallback() {
+            @Override
+            public void done(ParseUser user, ParseException err) {
+                if (user == null) {
+                    Log.d("TwitterAuth", "Uh oh. The user cancelled the Twitter login.");
+                } else if (user.isNew()) {
+                    Log.d("TwitterAuth", "User signed up and logged in through Twitter!");
+                } else {
+                    Log.d("TwitterAuth", "User logged in through Twitter!");
                 }
             }
         });
