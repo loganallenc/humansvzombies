@@ -8,6 +8,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -19,23 +20,23 @@ import android.view.View.OnTouchListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-
-public class HumanActivity extends LocationActivity implements AnimatorListener, SensorEventListener {
+public class HumanActivity extends CoreActivity implements AnimatorListener,
+		SensorEventListener {
 
 	ImageView flingObj;
 	FrameLayout mainScreen;
 	GestureDetector gestureDetector;
 	View.OnTouchListener gestureListener;
-	ImageView projectile;
+	ImageView flash;
 	View.OnTouchListener gestureListener1;
-	  private SensorManager mSensorManager;
+	private SensorManager mSensorManager;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		flingObj = (ImageView) findViewById(R.id.flingobject);
+		flingObj = (ImageView) findViewById(R.id.gun);
 		mainScreen = (FrameLayout) findViewById(R.id.mainscreen);
 
 		// flingObj.setClickable(true);
@@ -44,43 +45,27 @@ public class HumanActivity extends LocationActivity implements AnimatorListener,
 		// gestureListener1 = new TouchListener(mainScreen);
 
 		// flingObj.setOnTouchListener(gestureListener1);
-		projectile =  (ImageView) findViewById(R.id.flingobject);
-		projectile.setVisibility(View.GONE);
-		flingObj.setOnTouchListener(new OnTouchListener() {
-			@Override
-			public boolean onTouch(final View view, final MotionEvent event) {
-				//gestureDetector.onTouchEvent(event);
-				
-				ObjectAnimator flingAnimatorY = ObjectAnimator.ofFloat(
-						flingObj, "translationY", originalY, originalY + 500 * 10);
-				flingAnimatorY.setDuration(1000);
-				flingAnimatorY.addListener(HumanActivity.this);
-				flingAnimatorY.start();
-				return true;
-			}
-			
-			
-		});
-		  int[] posXY = new int[2];
-		  flingObj.getLocationOnScreen(posXY);
-		  
-		    originalX = flingObj.getX() - flingObj.getMeasuredWidth();
-			originalY = flingObj.getY()- flingObj.getMeasuredHeight();
-			mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+		flash = (ImageView) findViewById(R.id.flash);
+		flash.setVisibility(View.GONE);
+		flingObj.setOnTouchListener(new OnTouch());
+		int[] posXY = new int[2];
+		flingObj.getLocationOnScreen(posXY);
+
+		originalX = flingObj.getX() - flingObj.getMeasuredWidth();
+		originalY = flingObj.getY() - flingObj.getMeasuredHeight();
+		mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
 	}
-@Override
 
-public void onResume() {
+	@Override
+	public void onResume() {
 
-    super.onResume();
-    // for the system's orientation sensor registered listeners
+		super.onResume();
+		// for the system's orientation sensor registered listeners
 
-    mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
 
-            SensorManager.SENSOR_DELAY_GAME);
 
-}
+	}
 
 	/**
 	 * SWIPE
@@ -92,14 +77,14 @@ public void onResume() {
 
 		@Override
 		public boolean onDown(MotionEvent e) {
-			
+
 			return super.onDown(e);
 		}
 
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
 				float velocityY) {
-			
+
 			boolean result = false;
 			try {
 				float distY = e2.getY() - e1.getY();
@@ -114,10 +99,10 @@ public void onResume() {
 
 				int[] location = new int[2];
 				flingObj.getLocationOnScreen(location);
-				
+
 				float orgX = location[0];
 				float orgY = location[1] - offsetY_1;
-	
+
 				float stopX = orgX + distX;
 				float stopY = orgY + distY;
 
@@ -127,36 +112,36 @@ public void onResume() {
 						* Math.abs(velocityY));
 				if (totalVelocity > SWIPE_VELOCITY_THRESHOLD) {
 					// we swiped!
-					
-					//math stuff. We want to calculate a vector
-					
-					
+
+					// math stuff. We want to calculate a vector
+
 					ObjectAnimator flingAnimatorX = ObjectAnimator.ofFloat(
-							flingObj, "translationX", originalX, originalX + distX * 10);
+							flingObj, "translationX", originalX, originalX
+									+ distX * 10);
 					ObjectAnimator flingAnimatorY = ObjectAnimator.ofFloat(
-							flingObj, "translationY", originalY, originalY + distY * 10);
-				
-					//double angle = Math.atan(distY/distX);
+							flingObj, "translationY", originalY, originalY
+									+ distY * 10);
+
+					// double angle = Math.atan(distY/distX);
 					double theta = Math.toDegrees(Math.atan2(distY, distX));
 
 					if (theta < 0.0) {
-					    theta += 360.0;
+						theta += 360.0;
 					}
-					//math calculations since we dont want to wait for the animaiton 
-				Log.i("CurrentDegree", Float.toString(currentDegree));
-				Log.i("Shot Degree", Double.toString(theta));
-				
-			
+					// math calculations since we dont want to wait for the
+					// animaiton
+					Log.i("CurrentDegree", Float.toString(currentDegree));
+					Log.i("Shot Degree", Double.toString(theta));
+
 					degreeOfShot = currentDegree - theta;
-					
-					//animate it
+
+					// animate it
 					AnimatorSet as = new AnimatorSet();
 					as.playTogether(flingAnimatorY, flingAnimatorX);
 					as.setDuration(1000);
 					as.addListener(HumanActivity.this);
 					as.start();
-					
-				
+
 				}
 
 			} catch (Exception exception) {
@@ -191,31 +176,31 @@ public void onResume() {
 
 	@Override
 	public void onAnimationEnd(Animator animation) {
-		//mainScreen.invalidate();
-		Log.e("END", "END");
-		ObjectAnimator flingAnimatorX = ObjectAnimator.ofFloat(
-				flingObj, "translationX", originalX, originalX);
-		ObjectAnimator flingAnimatorY = ObjectAnimator.ofFloat(
-				flingObj, "translationY", originalY, originalY);
+		// mainScreen.invalidate();
+		/*
+		 * Log.e("END", "END"); ObjectAnimator flingAnimatorX =
+		 * ObjectAnimator.ofFloat(flingObj, "translationX", originalX,
+		 * originalX); ObjectAnimator flingAnimatorY =
+		 * ObjectAnimator.ofFloat(flingObj, "translationY", originalY,
+		 * originalY);
+		 * 
+		 * AnimatorSet as = new AnimatorSet(); as.playTogether(flingAnimatorY,
+		 * flingAnimatorX); as.setDuration(0); as.start();
+		 */
+		flash.setOnTouchListener(new OnTouch());
+		flash.setVisibility(View.GONE);
+		// TODO: Send off request
 
-		AnimatorSet as = new AnimatorSet();
-		as.playTogether(flingAnimatorY, flingAnimatorX);
-		as.setDuration(0);
-		as.start();
-		
-		//TODO: Send off request
-		
-		//super.latitude; super.longitude;
-		
-		//get angle relative to the north
-		  
+		// super.latitude; super.longitude;
+
+		// get angle relative to the north
+
 	}
 
 	float originalX = 0;
 	float originalY = 0;
-	
-	double degreeOfShot = 0.0;
 
+	double degreeOfShot = 0.0;
 
 	@Override
 	public void onAnimationCancel(Animator animation) {
@@ -228,17 +213,43 @@ public void onResume() {
 		// TODO Auto-generated method stub
 
 	}
+
 	private float currentDegree = 0.0f;
+
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 
-         currentDegree = Math.round(event.values[0]);
-
+		currentDegree = Math.round(event.values[0]);
 
 	}
+
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	private class OnTouch implements OnTouchListener {
+
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			 MediaPlayer mp = MediaPlayer.create(HumanActivity.this, R.raw.shotty);
+			   mp.start();
+			flash.setVisibility(View.VISIBLE);
+			flash.setOnTouchListener(null);
+
+			ObjectAnimator fadeOut = ObjectAnimator.ofFloat(flash, "alpha", 1f,
+					.3f);
+			fadeOut.setDuration(600);
+
+			 AnimatorSet mAnimationSet = new AnimatorSet();
+
+			mAnimationSet.play(fadeOut);
+
+			mAnimationSet.addListener(HumanActivity.this);
+			mAnimationSet.start();
+			return false;
+		}
+
 	}
 }

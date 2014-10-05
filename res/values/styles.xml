@@ -1,4 +1,9 @@
 <resources>
 
-
+   <style name="default_text_style">
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:textSize">72dp</item>
+    </style>
+    
 </resources>

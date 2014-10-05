@@ -21,7 +21,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class ZombieActivity extends LocationActivity {
+public class ZombieActivity extends CoreActivity {
 
 	private GoogleMap map;
 
