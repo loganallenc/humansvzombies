@@ -4,5 +4,6 @@
     <string name="app_name">HumanZombie</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-
+ <string name="normal">No zombies here... for now</string>
+    
 </resources>

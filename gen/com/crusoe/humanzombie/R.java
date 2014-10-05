@@ -408,7 +408,8 @@ containing a value of this type.
         public static final int ic_plusone_tall_off_client=0x7f020020;
         public static final int powered_by_google_dark=0x7f020021;
         public static final int powered_by_google_light=0x7f020022;
-        public static final int zombies_button=0x7f020023;
+        public static final int spring=0x7f020023;
+        public static final int zombies_button=0x7f020024;
     }
     public static final class id {
         public static final int book_now=0x7f080010;
@@ -545,6 +546,7 @@ containing a value of this type.
          */
         public static final int common_signin_button_text_long=0x7f070018;
         public static final int hello_world=0x7f07001b;
+        public static final int normal=0x7f07001d;
         /**  Text on a placeholder buy button when Google Play services is not
          available or up-to-date 
          */

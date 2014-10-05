@@ -35,7 +35,7 @@ public class LocationTaskReceiver extends BroadcastReceiver implements
 	double longitude = 0;
 	ParseUser userObject;
 	ParseGeoPoint geoObject;
-	ParseQuery<ParseObject> query;
+	ParseQuery<ParseUser> query;
 	ParseGeoPoint geo;
 	GPSTracker gps;
 
@@ -67,32 +67,37 @@ public class LocationTaskReceiver extends BroadcastReceiver implements
 		Entities e = EntityManager.getInstance().getCurrentEntity();
 		
 		if(e != null){
+			findUsersInRadius(0.5, arg0);
+			
 			float distance = DistanceConverter.distFrom(e.getLat(), e.getLongit(), latitude, longitude);
 			
-			if ((userObject.getString("playerType").equals("Zombie")) && distance < DistanceConverter.TOO_CLOSE) {
-				//push notification, user dead.
+			if (distance < DistanceConverter.TOO_CLOSE) {
+				String userType = userObject.getString("playerType");
+				System.out.println(userType);
 				
-				e = EntityManager.getInstance().getCurrentEntity();
-				
-				JSONObject data;
-				try {
-					long timestamp = System.currentTimeMillis();
-					data = new JSONObject(
-							"{\"name\": \"Death\"," +
-							"\"alert\": \"ts:" + timestamp + "\n" +
-										"death: true " +
-									"\"}"
-					);
-			        ParsePush push = new ParsePush();
-			        push.setChannel("user_" + e.getId());
-			        push.setData(data);
-			        push.sendInBackground();
-			        
-				} catch (JSONException e1) {
-					e1.printStackTrace();
+				if (userType != null && userType.equals("Zombie")) {
+					//push notification, user dead.
+					
+					e = EntityManager.getInstance().getCurrentEntity();
+					
+					JSONObject data;
+					try {
+						long timestamp = System.currentTimeMillis();
+						data = new JSONObject(
+								"{\"name\": \"Death\"," +
+								"\"alert\": \"ts:" + timestamp + "\n" +
+											"death: true " +
+										"\"}"
+						);
+				        ParsePush push = new ParsePush();
+				        push.setChannel("user_" + e.getId());
+				        push.setData(data);
+				        push.sendInBackground();
+				        
+					} catch (JSONException e1) {
+						e1.printStackTrace();
+					}
 				}
-			} else {
-				findUsersInRadius(0.5, arg0);
 			}
 		} else {
 			findUsersInRadius(0.5, arg0);
@@ -106,23 +111,30 @@ public class LocationTaskReceiver extends BroadcastReceiver implements
 
 	public void findUsersInRadius(double radius, final Context arg0) {
 
-		query = ParseQuery.getQuery("Users");
+		query = ParseUser.getQuery();
 		query.setLimit(10);
 		query.whereWithinMiles("location", geo, radius);
 
-		query.findInBackground(new FindCallback<ParseObject>() {
+		query.findInBackground(new FindCallback<ParseUser>() {
 
 			ParseObject p;
 			boolean didIt = false;
-
+			
 			@Override
-			public void done(List<ParseObject> parseObjects, ParseException e) {
-				if (e == null) {
-					for (int x = 0; x < parseObjects.size(); x++) {
-						p = parseObjects.get(x);
+			public void done(List<ParseUser> users, ParseException e) {
+				Log.i("query", "finding things!");
 
-						if (userObject.getString("playerType").equals("Human")) {
-							if ("Zombies".equals(p.getString("playerType"))) {
+				if (e == null) {
+					for (int x = 0; x < users.size(); x++) {
+						p = users.get(x);
+						Log.i("query", "Query: " + p.getString("playerType"));
+						Log.i("query", "User: " + userObject.getString("playerType"));
+
+						String userType = userObject.getString("playerType");
+						System.out.println(userType);
+						
+						if (userType != null && userType.equals("Human")) {
+							if ("Zombie".equals(p.getString("playerType"))) {
 								// sendIntent with p
 								Log.d("nearby", p.getClassName());
 								didIt = true;
@@ -130,7 +142,7 @@ public class LocationTaskReceiver extends BroadcastReceiver implements
 								break;
 							}
 						} else {
-							if ("Humans".equals(p.getString("playerType"))) {
+							if ("Human".equals(p.getString("playerType"))) {
 								// sendIntent with p
 								Log.d("nearby", p.getClassName());
 								didIt = true;

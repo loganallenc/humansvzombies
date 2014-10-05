@@ -154,15 +154,15 @@ public class HumanWeaponsActivity extends CoreActivity implements AnimatorListen
 
 					ParseGeoPoint geo = ParseUser.getCurrentUser().getParseGeoPoint("location");
 					
-					ParseQuery<ParseInstallation> query = ParseQuery.getQuery("Users");
+					ParseQuery<ParseUser> query = ParseUser.getQuery();
 					query.whereWithinMiles("location", geo, 0.15);
 					query.setLimit(1);
-					query.findInBackground(new FindCallback<ParseInstallation>() {
+					query.findInBackground(new FindCallback<ParseUser>() {
 
 						@Override
-						public void done(List<ParseInstallation> parseIns, ParseException e) {
+						public void done(List<ParseUser> users, ParseException e) {
 							if (e == null) {
-								for (ParseInstallation p : parseIns) {
+								for (ParseUser p : users) {
 									
 									ParseGeoPoint target = p.getParseGeoPoint("location");
 									double tLat = target.getLatitude();
