@@ -165,11 +165,14 @@ public class HumanActivity extends CoreActivity implements AnimatorListener,
 									ParseGeoPoint target = p.getParseGeoPoint("location");
 									double tLat = target.getLatitude();
 									double tLong = target.getLongitude();
+									
+									Log.i("targetLat", Double.toString(tLat));
+									Log.i("targetLong", Double.toString(tLong));
 
 									double pAngle = Math.atan2(tLong - longitude, tLat - latitude) * 180 / Math.PI;
 									
 									boolean hit = pAngle > degreeOfShot - 60 || pAngle < degreeOfShot + 60;
-										
+									
 									JSONObject data;
 									try {
 										long timestamp = System.currentTimeMillis();
