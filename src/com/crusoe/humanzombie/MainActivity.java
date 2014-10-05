@@ -89,6 +89,7 @@ public class MainActivity extends Activity {
 	}
 
 	public void launchHuman(View v) {
+		ParsePush.subscribeInBackground("user_" + ParseUser.getCurrentUser().getObjectId());
 		ParsePush.subscribeInBackground("Humans");
 		ParsePush.unsubscribeInBackground("Zombies");
 		Intent intent = new Intent(this, HumanActivity.class);
@@ -96,6 +97,7 @@ public class MainActivity extends Activity {
 	}
 
 	public void launchZombie(View v) {
+		ParsePush.subscribeInBackground("user_" + ParseUser.getCurrentUser().getObjectId());
 		ParsePush.subscribeInBackground("Zombies");
 		ParsePush.unsubscribeInBackground("Humans");
 		Intent intent = new Intent(this, ZombieActivity.class);

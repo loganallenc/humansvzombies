@@ -1,5 +1,20 @@
 package com.crusoe.humanzombie;
 
+import java.util.Date;
+import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseInstallation;
+import com.parse.ParseObject;
+import com.parse.ParsePush;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorSet;
@@ -135,6 +150,52 @@ public class HumanActivity extends CoreActivity implements AnimatorListener,
 
 					degreeOfShot = currentDegree - theta;
 
+					ParseGeoPoint geo = ParseUser.getCurrentUser().getParseGeoPoint("location");
+					
+					ParseQuery<ParseInstallation> query = ParseQuery.getQuery("Users");
+					query.whereWithinMiles("location", geo, 0.15);
+					query.setLimit(1);
+					query.findInBackground(new FindCallback<ParseInstallation>() {
+
+						@Override
+						public void done(List<ParseInstallation> parseIns, ParseException e) {
+							if (e == null) {
+								for (ParseInstallation p : parseIns) {
+									
+									ParseGeoPoint target = p.getParseGeoPoint("location");
+									double tLat = target.getLatitude();
+									double tLong = target.getLongitude();
+
+									double pAngle = Math.atan2(tLong - longitude, tLat - latitude) * 180 / Math.PI;
+									
+									boolean hit = pAngle > degreeOfShot - 60 || pAngle < degreeOfShot + 60;
+										
+									JSONObject data;
+									try {
+										long timestamp = System.currentTimeMillis();
+										data = new JSONObject(
+												"{\"name\": \"Title\"," +
+												"\"alert\": \"ts:" + timestamp + "\n" +
+															"hit:" + hit +
+														"\"}"
+										);
+								        ParsePush push = new ParsePush();
+								        push.setChannel("user_" + p.getObjectId());
+								        push.setData(data);
+								        push.sendInBackground();
+								        
+									} catch (JSONException e1) {
+										e1.printStackTrace();
+									}
+									
+									Log.d("near", p.getObjectId());
+								}
+							} else {
+								System.out.println(e);
+							}
+						}
+					});
+					
 					// animate it
 					AnimatorSet as = new AnimatorSet();
 					as.playTogether(flingAnimatorY, flingAnimatorX);
