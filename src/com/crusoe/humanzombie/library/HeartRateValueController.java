@@ -1,10 +1,8 @@
 package com.crusoe.humanzombie.library;
 
-import java.util.ArrayList;
-
 public class HeartRateValueController{
 	public static int normalRateFrequency(){
-		//this is how many miliseconds between beats
+		//this is how many milliseconds between beats
 		return 700;
 	}
 	public static int standardBeatLast(){
@@ -12,7 +10,7 @@ public class HeartRateValueController{
 	}
 	
 	public static int fastRateFrequency(){
-		//this is how many miliseconds between beats
+		//this is how many milliseconds between beats
 		return 300;
 	}
 	static Object lock = new Object();
@@ -31,6 +29,4 @@ public class HeartRateValueController{
 		}
 		return r;
 	}
-	
-	
 }

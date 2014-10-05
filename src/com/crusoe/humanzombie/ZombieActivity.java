@@ -3,11 +3,8 @@ package com.crusoe.humanzombie;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.view.MenuItem;
 
 import com.crusoe.humanzombie.library.Entities;
@@ -53,8 +50,6 @@ public class ZombieActivity extends CoreActivity {
 				fixZoom();
 			}
 		});
-
-		Bundle b = this.getIntent().getExtras();
 
 	}
 
@@ -139,7 +134,6 @@ public class ZombieActivity extends CoreActivity {
 		}
 		
 		Crouton.makeText(this, "Someone got turned into a zombie", Style.ALERT).show();
-	
 	
 	}
 	@Override

@@ -21,7 +21,7 @@
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="17" />
+        android:targetSdkVersion="19" />
     <!-- Google Maps Manifest -->
 
     <application
@@ -69,15 +69,6 @@
                 <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
         </receiver>
-        <receiver
-            android:name=".PushReceiver"
-            android:exported="false" >
-            <intent-filter>
-                <action android:name="com.parse.push.intent.RECEIVE" />
-                <action android:name="com.parse.push.intent.DELETE" />
-                <action android:name="com.parse.push.intent.OPEN" />
-            </intent-filter>
-        </receiver>
         <receiver android:name="com.crusoe.humanzombie.LocationTaskReceiver" >
         </receiver>
           <receiver android:name="com.crusoe.humanzombie.BeatingTaskReceiver" >
@@ -95,7 +86,7 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name="com.parse.ParseBroadcastReceiver"
+            android:name="com.crusoe.PushReceiver"
             android:exported="false" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

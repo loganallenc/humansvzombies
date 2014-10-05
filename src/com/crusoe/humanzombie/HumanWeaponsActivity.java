@@ -1,6 +1,5 @@
 package com.crusoe.humanzombie;
 
-import java.util.Date;
 import java.util.List;
 
 import org.json.JSONException;
@@ -13,7 +12,6 @@ import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseInstallation;
-import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -85,8 +83,6 @@ public class HumanWeaponsActivity extends CoreActivity implements AnimatorListen
 		super.onResume();
 		// for the system's orientation sensor registered listeners
 
-
-
 	}
 
 	/**
@@ -94,7 +90,6 @@ public class HumanWeaponsActivity extends CoreActivity implements AnimatorListen
 	 */
 	private final class GestureListener extends SimpleOnGestureListener {
 
-		private static final int SWIPE_THRESHOLD = 100;
 		private static final int SWIPE_VELOCITY_THRESHOLD = 100;
 
 		@Override

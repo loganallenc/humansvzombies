@@ -1,23 +1,15 @@
 package com.crusoe.humanzombie;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.parse.FindCallback;
 import com.parse.ParseAnalytics;
-import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
-import com.parse.ParseInstallation;
-import com.parse.ParseObject;
 import com.parse.ParsePush;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 
@@ -52,7 +44,7 @@ public class MainActivity extends Activity {
 
 	public void launchHuman(View v) {
 		userObject.put("playerType", "Human");
-		userObject.saveEventually();
+		userObject.saveInBackground();
 		
 		ParsePush.subscribeInBackground("user_" + ParseUser.getCurrentUser().getObjectId());
 		ParsePush.subscribeInBackground("Humans");
@@ -63,7 +55,7 @@ public class MainActivity extends Activity {
 
 	public void launchZombie(View v) {
 		userObject.put("playerType", "Zombie");
-		userObject.saveEventually();
+		userObject.saveInBackground();
 		
 		ParsePush.subscribeInBackground("user_" + ParseUser.getCurrentUser().getObjectId());
 		ParsePush.subscribeInBackground("Zombies");

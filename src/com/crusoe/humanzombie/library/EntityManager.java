@@ -1,7 +1,5 @@
 package com.crusoe.humanzombie.library;
 
-import java.util.ArrayList;
-
 import com.crusoe.humanzombie.library.OverallStateController.OverallStatus;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
