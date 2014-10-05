@@ -27,12 +27,8 @@ public class ParseApplication extends Application {
 
         ParseACL.setDefaultACL(defaultACL, true);
 
-        ParsePush.subscribeInBackground("Humans");
-
         ParseInstallation installation = ParseInstallation.getCurrentInstallation();
         installation.put("user", ParseUser.getCurrentUser());
         installation.saveInBackground();
-
-        ParseTwitterUtils.initialize("0bfxloQjcnVxREzhnfXBDymrG", "YZIIS1u3CC4yhwGFuxwzqLiuWV5tXwKYSsh5rlCM3rLMZus8l8");
     }
 }

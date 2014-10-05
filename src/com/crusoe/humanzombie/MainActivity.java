@@ -16,6 +16,7 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -88,11 +89,15 @@ public class MainActivity extends Activity {
 	}
 
 	public void launchHuman(View v) {
+		ParsePush.subscribeInBackground("Humans");
+		ParsePush.unsubscribeInBackground("Zombies");
 		Intent intent = new Intent(this, HumanActivity.class);
 		startActivity(intent);
 	}
 
 	public void launchZombie(View v) {
+		ParsePush.subscribeInBackground("Zombies");
+		ParsePush.unsubscribeInBackground("Humans");
 		Intent intent = new Intent(this, ZombieActivity.class);
 		startActivity(intent);
 	}

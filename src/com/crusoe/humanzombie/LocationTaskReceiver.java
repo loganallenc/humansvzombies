@@ -1,7 +1,5 @@
 package com.crusoe.humanzombie;
 
-
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +8,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 public class LocationTaskReceiver extends BroadcastReceiver implements LocationListener {
 	protected LocationManager locationManager;
