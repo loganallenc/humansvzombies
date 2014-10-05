@@ -1,0 +1,23 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/mainscreen">
+ 
+   <ImageView
+        android:id="@+id/projectile"
+       android:layout_gravity="center_vertical|center_horizontal"
+        android:src="@drawable/bullet"
+        android:layout_width="250dp"
+          android:layout_height="250dp"
+        tools:context=".MainActivity" />
+    <ImageView
+        android:id="@+id/flingobject"
+       android:layout_gravity="center_vertical|center_horizontal"
+   
+        android:src="@drawable/launch_item"
+        android:layout_width="150dp"
+          android:layout_height="150dp"
+        tools:context=".MainActivity" />
+
+</FrameLayout>
