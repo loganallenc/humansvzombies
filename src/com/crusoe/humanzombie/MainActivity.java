@@ -35,16 +35,9 @@ public class MainActivity extends Activity {
 
 		userObject = ParseUser.getCurrentUser();
 
-		List<String> subscribedChannels = ParseInstallation
-				.getCurrentInstallation().getList("channels");
-
-		for (String i : subscribedChannels) {
-			Log.d("channels", i);
-		}
-
-		nearMe();
+		//nearMe();
 	}
-
+/*
 	public void nearMe() {
 		GPSTracker gps = new GPSTracker(this);
 		double latitude = gps.getLatitude();
@@ -74,7 +67,7 @@ public class MainActivity extends Activity {
 		});
 	}
 
-
+*/
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

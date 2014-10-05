@@ -40,9 +40,7 @@ public class LocationTaskReceiver extends BroadcastReceiver implements LocationL
     
     @Override
 	public void onLocationChanged(Location location) {
-		if (latitude == 0) {
-			userObject = ParseUser.getCurrentUser();
-		}
+		userObject = ParseUser.getCurrentUser();
 		
 		latitude = location.getLatitude();
 		longitude = location.getLongitude();
