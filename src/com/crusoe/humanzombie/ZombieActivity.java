@@ -25,14 +25,14 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class ZombieActivity extends CoreActivity {
 
-	private GoogleMap map;
+	private static GoogleMap map;
 
 	public static final String LAT_INTENT = "LAT";
 	public static final String LONG_INTENT = "LONG";
 	public static final String ID_INTENT = "ID";
 	public static final String FROM_HUMAN = "FROMHUMAN";
 	public static final String MAP_UPDATE_INTENT_FILTER = "HUMAN_ACTIVITY_LOCATION_FILTER";
-	HashMap<String, Marker> listOfPoints = new HashMap<String, Marker>();
+	private static HashMap<String, Marker> listOfPoints = new HashMap<String, Marker>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +40,6 @@ public class ZombieActivity extends CoreActivity {
 		setContentView(R.layout.google_maps_layout);
 
 		// set up action bar
-		
 
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
@@ -52,10 +51,11 @@ public class ZombieActivity extends CoreActivity {
 				fixZoom();
 			}
 		});
-		if(this.getIntent().getBooleanExtra(FROM_HUMAN, false)){
+		if (this.getIntent().getBooleanExtra(FROM_HUMAN, false)) {
 
-			
-			Crouton.makeText(this, "A zombie killed you. You are now one of them!", Style.ALERT).show();
+			Crouton.makeText(this,
+					"A zombie killed you. You are now one of them!",
+					Style.ALERT).show();
 		}
 	}
 
@@ -71,25 +71,26 @@ public class ZombieActivity extends CoreActivity {
 			counter++;
 
 		}
-		if(m == null){
+		if (m == null) {
 			ParseUser user = ParseUser.getCurrentUser();
 			ParseGeoPoint geo = user.getParseGeoPoint("location");
-		
-			if(geo == null){
+
+			if (geo == null) {
 				return;
 			}
-			LatLng l = new LatLng((float) geo.getLatitude(), (float) geo.getLongitude());
-			Marker newMarker = map.addMarker(new MarkerOptions()
-			.position(l));
+			LatLng l = new LatLng((float) geo.getLatitude(),
+					(float) geo.getLongitude());
+			Marker newMarker = map.addMarker(new MarkerOptions().position(l));
 			listOfPoints.put("SELF", newMarker);
-			
+
 			m = newMarker;
 		}
 		if (counter > 0) {
 			map.moveCamera(CameraUpdateFactory.newLatLngBounds(bc.build(), 50));
 
 		} else {
-			map.moveCamera(CameraUpdateFactory.newLatLngZoom(m.getPosition(), 15));
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(m.getPosition(),
+					15));
 
 		}
 	}
@@ -111,7 +112,7 @@ public class ZombieActivity extends CoreActivity {
 
 		Entities e = EntityManager.getInstance().getCurrentEntity();
 
-		if(e == null){
+		if (e == null) {
 			return;
 		}
 		double lat = e.getLat();
@@ -128,6 +129,7 @@ public class ZombieActivity extends CoreActivity {
 		Marker newMarker = map.addMarker(new MarkerOptions()
 				.position(newLocation));
 		listOfPoints.put(id, newMarker);
+
 	}
 
 	@Override
@@ -135,22 +137,44 @@ public class ZombieActivity extends CoreActivity {
 		onBackPressed();
 		return true;
 	}
+
 	@Override
-	public void fillDataKillHuman(Intent intent){
+	public void fillDataKillHuman(Intent intent) {
 		super.fillDataKillHuman(intent);
 		String id = intent.getStringExtra("ID");
 		if (listOfPoints.containsKey(id)) {
 			Marker markerToBeReplaced = listOfPoints.get(id);
 			markerToBeReplaced.remove();
 			listOfPoints.remove(id);
-			Crouton.makeText(this, "Someone got turned into a zombie", Style.ALERT).show();
+			Crouton.makeText(this, "Someone got turned into a zombie",
+					Style.ALERT).show();
 		}
-		
-		
-	//Log.i("Zombie person", id);
+
+		// Log.i("Zombie person", id);
 	}
+
 	@Override
-	public void fillDataDisableZombie(Intent intent){
+	public void fillDataDisableZombie(Intent intent) {
 		Crouton.makeText(this, "You are disabled.", Style.ALERT).show();
 	}
+
+	public static void updateSelf(double lat, double longit) {
+		
+		Marker m = listOfPoints.get("SELF");
+		if(m != null){
+		m.remove();
+
+		listOfPoints.remove("SELF");
+		}
+
+		LatLng newLocation = new LatLng(lat, longit);
+
+		// now reinsert
+
+		Marker newMarker = map.addMarker(new MarkerOptions()
+				.position(newLocation));
+		listOfPoints.put("SELF", newMarker);
+
+	}
+
 }

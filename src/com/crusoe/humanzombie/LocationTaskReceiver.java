@@ -39,18 +39,30 @@ public class LocationTaskReceiver extends BroadcastReceiver implements
 	ParseGeoPoint geo;
 	GPSTracker gps;
 	LocationManager mLocationManager;
+	Location loc;
+	private static final int MinTime = 5000;
 
 	@Override
 	public void onReceive(Context arg0, Intent arg1) {
 		locationManager = (LocationManager) arg0
 				.getSystemService(Context.LOCATION_SERVICE);
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0,
-				0, this);
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MinTime, 0, this);
+
+		loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		
+        /*float bestAccuracy = -1f;
+        if (loc.getAccuracy() != 0.0f && (loc.getAccuracy() < bestAccuracy) || bestAccuracy == -1f) {
+            locationManager.removeUpdates(this);
+        }
+        bestAccuracy = loc.getAccuracy();*/
+        
 		userObject = ParseUser.getCurrentUser();
 
-		gps = ParseApplication.getTracker();
-		latitude = gps.getLatitude();
-		longitude = gps.getLongitude();
+		//gps = new GPSTracker(arg0);
+		if (loc != null) {
+			latitude = loc.getLatitude();
+			longitude = loc.getLongitude();
+		}
 
 		if (latitude == 0.0 && longitude == 0.0) {
 			Location l = getLastKnownLocation(arg0);
@@ -61,6 +73,8 @@ public class LocationTaskReceiver extends BroadcastReceiver implements
 				return;
 			}
 		}
+
+		ZombieActivity.updateSelf(latitude, longitude);
 		geo = new ParseGeoPoint(latitude, longitude);
 
 		Log.d("geo", Double.toString(geo.getLatitude()));

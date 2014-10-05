@@ -12,7 +12,7 @@ import com.parse.ParseUser;
 
 public class ParseApplication extends Application {
 
-    private static GPSTracker tracker;
+    //sprivate static GPSTracker tracker;
     
     @Override
     public void onCreate() {
@@ -35,10 +35,10 @@ public class ParseApplication extends Application {
         installation.put("user", ParseUser.getCurrentUser());
         installation.saveInBackground();
         
-        tracker = new GPSTracker(this);
+        //tracker = new GPSTracker(this);
     }
     
-    public static GPSTracker getTracker(){
-    	return tracker;
-    }
+    //public static GPSTracker getTracker(){
+    //	return tracker;
+    //}
 }
