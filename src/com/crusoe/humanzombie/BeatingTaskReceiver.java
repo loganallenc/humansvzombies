@@ -13,8 +13,9 @@ public class BeatingTaskReceiver extends BroadcastReceiver {
 	public void onReceive(Context arg0, Intent arg1) {
 		// For our recurring task, we'll just display a message
 		// Toast.makeText(arg0, "I'm running", Toast.LENGTH_SHORT).show();
-		Log.i("Beating task receiver", "beating task receiver");
+		//Log.i("Beating task receiver", "beating task receiver");
 		if (CoreActivity.isBeating()) {
+			Log.i("Beating", "beating");
 			Vibrator v = (Vibrator) arg0
 					.getSystemService(Context.VIBRATOR_SERVICE);
 		

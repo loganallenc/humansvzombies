@@ -4,6 +4,8 @@ import com.crusoe.humanzombie.library.Entities;
 import com.crusoe.humanzombie.library.EntityManager;
 import com.crusoe.humanzombie.library.OverallStateController;
 import com.crusoe.humanzombie.library.OverallStateController.OverallStatus;
+import com.parse.ParsePush;
+import com.parse.ParseUser;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -29,23 +31,6 @@ public class NormalHumanActivity extends CoreActivity {
 		}
 	}
 	
-	@Override
-	public void fillDataSwapEntity(Intent intent){
-		super.fillDataSwapEntity(intent);
-		String id = intent.getStringExtra("ID");
-		
-		if(EntityManager.getInstance().getCurrentEntity() != null &&EntityManager.getInstance().getCurrentEntity().getId().equals(id)){
-			EntityManager.getInstance().replaceEntity(null);
-		}
-		//if we got swapped, then we go straight to the zombie activity
-		Crouton.makeText(this, "You shot a zombie", Style.ALERT).show();
+	
 
-	}
-	@Override
-	public void fillDataKillHuman(Intent intent){
-		Crouton.makeText(this, "A zombie killed you. You are now one of them!", Style.ALERT).show();
-		Intent i = new Intent(this, ZombieActivity.class);
-		context.startActivity(i);
-		
-	}
 }

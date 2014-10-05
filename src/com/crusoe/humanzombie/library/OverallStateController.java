@@ -7,7 +7,7 @@ import com.parse.ParseUser;
 
 public class OverallStateController {
 	public enum OverallStatus {
-		NO_ENEMY, ENEMY_PRESENT, ENEMY_CLOSE
+		NO_ENEMY, ENEMY_PRESENT, ENEMY_CLOSE, DEATH
 	}
 
 	static Object lock = new Object();
@@ -30,7 +30,10 @@ public class OverallStateController {
 	public OverallStatus evaluateOverallStatus(float distance) {
 		if (distance > DistanceConverter.TOO_CLOSE) {
 			return OverallStatus.ENEMY_PRESENT;
-		} else {
+		} else if(distance < DistanceConverter.TOO_CLOSE) {
+			return OverallStatus.DEATH;
+		
+		}else{
 			return OverallStatus.ENEMY_CLOSE;
 		}
 	}
@@ -59,12 +62,14 @@ public class OverallStateController {
 
 		// we will update our status based on this
 		OverallStatus status_from_entity = evaluateOverallStatus(e);
+		
+		status = status_from_entity;/*
 		if (status_from_entity.equals(OverallStatus.ENEMY_CLOSE)
 				&& status.equals(OverallStatus.ENEMY_PRESENT)) {
 			status = OverallStatus.ENEMY_CLOSE;
 		}else{
 			status = OverallStatus.ENEMY_PRESENT;
-		}
+		}*/
 
 	}
 	public OverallStatus getStatus(){

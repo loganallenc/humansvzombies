@@ -188,6 +188,7 @@ public class HumanWeaponsActivity extends CoreActivity implements AnimatorListen
 								        push.setChannel("user_" + p.getObjectId());
 								        push.setData(data);
 								        push.sendInBackground();
+								       Log.d("Shot fired hit", Boolean.toString(hit) );
 								        
 									} catch (JSONException e1) {
 										e1.printStackTrace();
@@ -322,30 +323,29 @@ public class HumanWeaponsActivity extends CoreActivity implements AnimatorListen
 	@Override
 	public void fillData(Intent intent) {
 		super.fillData(intent);
-		// should we switch to weapon mode?
+		//we have updated to a new enemy if we have died, then we should swap to zombie.
 		if(OverallStateController.getInstance().getStatus().equals(OverallStatus.NO_ENEMY)){
 			Intent i = new Intent(this, NormalHumanActivity.class);
 			startActivity(i);
+		}else if(OverallStateController.getInstance().getStatus().equals(OverallStatus.DEATH)){
+			ParseUser userObject = ParseUser.getCurrentUser();
+			
+			userObject.put("playerType", "Zombie");
+			userObject.saveInBackground();
+			
+			ParsePush.subscribeInBackground("user_" + userObject.getObjectId());
+			ParsePush.subscribeInBackground("Zombies");
+			ParsePush.unsubscribeInBackground("Humans");
+			
+			
+			Intent i = new Intent(this, ZombieActivity.class);
+			i.putExtra(ZombieActivity.FROM_HUMAN, true);
+			startActivity(i);
 		}
 	}
-	
-	@Override
-	public void fillDataSwapEntity(Intent intent){
-		super.fillDataSwapEntity(intent);
-		String id = intent.getStringExtra("ID");
-		
-		if(EntityManager.getInstance().getCurrentEntity().getId().equals(id)){
-			EntityManager.getInstance().replaceEntity(null);
-		}
-		//if we got swapped, then we go straight to the zombie activity
-		Crouton.makeText(this, "You shot a zombie", Style.ALERT).show();
+	public void fillDataDisableZombie(Intent intent) {
+
+		Crouton.makeText(this, "You shot a zombie!", Style.INFO).show();
 	}
-	
-	@Override
-	public void fillDataKillHuman(Intent intent){
-		Crouton.makeText(this, "A zombie killed you. You are now one of them!", Style.ALERT).show();
-		Intent i = new Intent(this, ZombieActivity.class);
-		context.startActivity(i);
-		
-	}
+
 }

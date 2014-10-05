@@ -73,6 +73,8 @@
         </receiver>
           <receiver android:name="com.crusoe.humanzombie.BeatingTaskReceiver" >
         </receiver>
+        <service android:name=".GPSTracker"
+            android:exported="false"></service>
         
         <receiver
             android:name="com.parse.GcmBroadcastReceiver"

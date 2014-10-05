@@ -85,10 +85,9 @@ public class PushReceiver extends ParsePushBroadcastReceiver {
 			
 			Intent i = new Intent(CoreActivity.LOCATION_ENTITY_UPDATE_FILTER);
 			i.putExtra("ID", id);
-			LocalBroadcastManager.getInstance(context).sendBroadcast(
-					i);
+			LocalBroadcastManager.getInstance(context).sendBroadcast(i);
 			
-			//Remove zombie marker from map using ID.
+			//Remove human marker from map using ID.
 		} else if (title.equals("Death")) {
 			//human killed :)
 			LocalBroadcastManager.getInstance(context).sendBroadcast(

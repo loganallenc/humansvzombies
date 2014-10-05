@@ -38,24 +38,29 @@ public class LocationTaskReceiver extends BroadcastReceiver implements
 	ParseQuery<ParseUser> query;
 	ParseGeoPoint geo;
 	GPSTracker gps;
+	LocationManager mLocationManager;
 
 	@Override
 	public void onReceive(Context arg0, Intent arg1) {
-		// For our recurring task, we'll just display a message
-		// Toast.makeText(arg0, "I'm running", Toast.LENGTH_SHORT).show();
-
 		locationManager = (LocationManager) arg0
 				.getSystemService(Context.LOCATION_SERVICE);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0,
 				0, this);
-		// Log.i("LocationTaskReceiver", "Location Request");
-
 		userObject = ParseUser.getCurrentUser();
 
-		gps = new GPSTracker(arg0);
+		gps = ParseApplication.getTracker();
 		latitude = gps.getLatitude();
 		longitude = gps.getLongitude();
 
+		if (latitude == 0.0 && longitude == 0.0) {
+			Location l = getLastKnownLocation(arg0);
+			if (l != null) {
+				latitude = l.getLatitude();
+				longitude = l.getLongitude();
+			} else {
+				return;
+			}
+		}
 		geo = new ParseGeoPoint(latitude, longitude);
 
 		Log.d("geo", Double.toString(geo.getLatitude()));
@@ -65,35 +70,33 @@ public class LocationTaskReceiver extends BroadcastReceiver implements
 		userObject.saveInBackground();
 
 		Entities e = EntityManager.getInstance().getCurrentEntity();
-		
-		if(e != null){
+
+		if (e != null) {
 			findUsersInRadius(0.5, arg0);
-			
-			float distance = DistanceConverter.distFrom(e.getLat(), e.getLongit(), latitude, longitude);
-			
+
+			float distance = DistanceConverter.distFrom(e.getLat(),
+					e.getLongit(), latitude, longitude);
+
 			if (distance < DistanceConverter.TOO_CLOSE) {
 				String userType = userObject.getString("playerType");
 				System.out.println(userType);
-				
+
 				if (userType != null && userType.equals("Zombie")) {
-					//push notification, user dead.
-					
+					// push notification, user dead.
+
 					e = EntityManager.getInstance().getCurrentEntity();
-					
+
 					JSONObject data;
 					try {
 						long timestamp = System.currentTimeMillis();
-						data = new JSONObject(
-								"{\"name\": \"Death\"," +
-								"\"alert\": \"ts:" + timestamp + "\n" +
-											"death: true " +
-										"\"}"
-						);
-				        ParsePush push = new ParsePush();
-				        push.setChannel("user_" + e.getId());
-				        push.setData(data);
-				        push.sendInBackground();
-				        
+						data = new JSONObject("{\"name\": \"Death\","
+								+ "\"alert\": \"ts:" + timestamp + "\n"
+								+ "death: true " + "\"}");
+						ParsePush push = new ParsePush();
+						push.setChannel("user_" + e.getId());
+						push.setData(data);
+						push.sendInBackground();
+
 					} catch (JSONException e1) {
 						e1.printStackTrace();
 					}
@@ -104,10 +107,35 @@ public class LocationTaskReceiver extends BroadcastReceiver implements
 		}
 	}
 
-	LocationManager mLocationManager;
+	private Location getLastKnownLocation(Context ctx) {
+		mLocationManager = (LocationManager) ctx.getApplicationContext()
+				.getSystemService(Context.LOCATION_SERVICE);
+		List<String> providers = mLocationManager.getProviders(true);
+		Location bestLocation = null;
+		for (String provider : providers) {
+			Location l = mLocationManager.getLastKnownLocation(provider);
+			// Log.d("last known location, provider: %s, location: %s",
+			// provider, l);
+
+			if (l == null) {
+				continue;
+			}
+			if (bestLocation == null
+					|| l.getAccuracy() < bestLocation.getAccuracy()) {
+				// ALog.d("found best last known location: %s", l);
+				bestLocation = l;
+			}
+		}
+		if (bestLocation == null) {
+			return null;
+		}
+		return bestLocation;
+
+	}
 
 	@Override
-	public void onLocationChanged(Location location) {}
+	public void onLocationChanged(Location location) {
+	}
 
 	public void findUsersInRadius(double radius, final Context arg0) {
 
@@ -119,7 +147,7 @@ public class LocationTaskReceiver extends BroadcastReceiver implements
 
 			ParseObject p;
 			boolean didIt = false;
-			
+
 			@Override
 			public void done(List<ParseUser> users, ParseException e) {
 				Log.i("query", "finding things!");
@@ -128,17 +156,19 @@ public class LocationTaskReceiver extends BroadcastReceiver implements
 					for (int x = 0; x < users.size(); x++) {
 						p = users.get(x);
 						Log.i("query", "Query: " + p.getString("playerType"));
-						Log.i("query", "User: " + userObject.getString("playerType"));
+						Log.i("query",
+								"User: " + userObject.getString("playerType"));
 
 						String userType = userObject.getString("playerType");
 						System.out.println(userType);
-						
+
 						if (userType != null && userType.equals("Human")) {
 							if ("Zombie".equals(p.getString("playerType"))) {
 								// sendIntent with p
 								Log.d("nearby", p.getClassName());
 								didIt = true;
-								OverallStateController.getInstance().updateOverallStatus(p);
+								OverallStateController.getInstance()
+										.updateOverallStatus(p);
 								break;
 							}
 						} else {
@@ -146,24 +176,35 @@ public class LocationTaskReceiver extends BroadcastReceiver implements
 								// sendIntent with p
 								Log.d("nearby", p.getClassName());
 								didIt = true;
-								OverallStateController.getInstance().updateOverallStatus(p);
-								// x = parseObjects.size();
+								OverallStateController.getInstance()
+										.updateOverallStatus(p);
 								break;
 							}
 						}
 					}
 
 					if (!didIt) {
-						OverallStateController.getInstance().updateOverallStatus(null);
+						OverallStateController.getInstance()
+								.updateOverallStatus(null);
 						EntityManager.getInstance().replaceEntity(null);
-					}else{
+					} else {
 						EntityManager.getInstance().replaceEntity(p);
-						//launch broadcast to all activities to update now that we have updated the overall status of player
-						LocalBroadcastManager.getInstance(arg0).sendBroadcast(
-								new Intent(CoreActivity.ENTITY_SWAP_UPDATE_FILTER));
+						// this means that we have a new nearby person. We will
+						// use this to change
+						ParseGeoPoint geo = p.getParseGeoPoint("location");
+						float distance = DistanceConverter.distFrom(
+								geo.getLatitude(), geo.getLongitude(),
+								latitude, longitude);
+
+						Log.i("Distance_TO_ENTITY", Float.toString(distance));
 					}
 
-			
+					LocalBroadcastManager
+							.getInstance(arg0)
+							.sendBroadcast(
+									new Intent(
+											CoreActivity.LOCATION_ENTITY_UPDATE_FILTER));
+
 				} else {
 					e.printStackTrace();
 				}
@@ -173,19 +214,14 @@ public class LocationTaskReceiver extends BroadcastReceiver implements
 
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
-
 	}
 
 	@Override
 	public void onProviderEnabled(String provider) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onProviderDisabled(String provider) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

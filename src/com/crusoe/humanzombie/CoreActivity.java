@@ -1,5 +1,11 @@
 package com.crusoe.humanzombie;
 
+import com.parse.ParsePush;
+import com.parse.ParseUser;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -17,11 +23,8 @@ public abstract class CoreActivity extends Activity {
 	private PendingIntent pendingIntent;
 	private AlarmManager manager;
 
-	public static final String LOCATION_ENTITY_UPDATE_FILTER = "NEW_ENTITY_INTENT_FILTER";
+	public static final String LOCATION_ENTITY_UPDATE_FILTER = "LOCATION_INTENT_FILTER";
 
-	public static final String ENTITY_SWAP_UPDATE_FILTER = "NEW_ENTITY_INTENT_FILTER";
-
-	
 
 	public static final String DISABLE_ZOMBIE_FILTER = "DISABLE_ZOMBIE_FILTER";
 	public static final String HUMAN_KILLED_FILTER = "HUMAN_KILLED_FILTER";
@@ -35,13 +38,7 @@ public abstract class CoreActivity extends Activity {
 		}
 	};
 
-	private BroadcastReceiver entitySwapSyncReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
 
-			fillDataSwapEntity(intent);
-		}
-	};
 	
 	private BroadcastReceiver humanKilledSyncReceiver = new BroadcastReceiver() {
 		@Override
@@ -77,7 +74,7 @@ public abstract class CoreActivity extends Activity {
 		// stopService(new Intent(LocationActivity.this,
 		// BackgroundLocationService.class));
 		cancelLocationFetch();
-		startLocationFetch(1000 * 10);
+		startLocationFetch(1000 * 3);
 
 		cancelBeating();
 		startBeating(1000);
@@ -85,9 +82,7 @@ public abstract class CoreActivity extends Activity {
 		LocalBroadcastManager.getInstance(this).registerReceiver(
 				newDataSyncReceiver,
 				new IntentFilter(LOCATION_ENTITY_UPDATE_FILTER));
-		LocalBroadcastManager.getInstance(this).registerReceiver(
-				entitySwapSyncReceiver,
-				new IntentFilter(ENTITY_SWAP_UPDATE_FILTER));
+	
 		LocalBroadcastManager.getInstance(this).registerReceiver(
 				humanKilledSyncReceiver,
 				new IntentFilter(HUMAN_KILLED_FILTER));
@@ -109,8 +104,7 @@ public abstract class CoreActivity extends Activity {
 
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(
 				newDataSyncReceiver);
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(
-				entitySwapSyncReceiver);
+
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(
 				humanKilledSyncReceiver);
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(
@@ -173,11 +167,21 @@ public abstract class CoreActivity extends Activity {
 
 	}
 
-	public void fillDataSwapEntity(Intent intent) {
 
-	}
 	public void fillDataKillHuman(Intent intent) {
+	/*	ParseUser userObject = ParseUser.getCurrentUser();
+		
+		userObject.put("playerType", "Zombie");
+		userObject.saveInBackground();
+		
+		ParsePush.subscribeInBackground("user_" + userObject.getObjectId());
+		ParsePush.subscribeInBackground("Zombies");
+		ParsePush.unsubscribeInBackground("Humans");
+		
+		Crouton.makeText(this, "You were just turned into a zombie", Style.ALERT).show();
 
+		Intent intent2 = new Intent(this, ZombieActivity.class);
+		startActivity(intent2);*/
 	}
 	public void fillDataDisableZombie(Intent intent) {
 

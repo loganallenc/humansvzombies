@@ -52,15 +52,15 @@ public class Entities{
 	
 	public static float distanceFrom(Entities e1, Entities e2){
 
-		float distance = DistanceConverter.distFrom((float) e1.getLat(),
-				(float) e1.getLongit(), (float) e2.getLat(), (float) e2.getLongit());
+		float distance = DistanceConverter.distFrom( e1.getLat(),
+				 e1.getLongit(),  e2.getLat(),  e2.getLongit());
 		float absDistance = Math.abs(distance);
 		return absDistance;
 	}
 	public static float distanceFrom(Entities e1, double lat, double longit){
 
-		float distance = DistanceConverter.distFrom((float) e1.getLat(),
-				(float) e1.getLongit(), (float) lat, (float) longit);
+		float distance = DistanceConverter.distFrom( e1.getLat(),
+				 e1.getLongit(),  lat,  longit);
 		float absDistance = Math.abs(distance);
 		return absDistance;
 	}

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.crusoe.humanzombie.library.Entities;
@@ -29,6 +30,7 @@ public class ZombieActivity extends CoreActivity {
 	public static final String LAT_INTENT = "LAT";
 	public static final String LONG_INTENT = "LONG";
 	public static final String ID_INTENT = "ID";
+	public static final String FROM_HUMAN = "FROMHUMAN";
 	public static final String MAP_UPDATE_INTENT_FILTER = "HUMAN_ACTIVITY_LOCATION_FILTER";
 	HashMap<String, Marker> listOfPoints = new HashMap<String, Marker>();
 
@@ -50,7 +52,11 @@ public class ZombieActivity extends CoreActivity {
 				fixZoom();
 			}
 		});
+		if(this.getIntent().getBooleanExtra(FROM_HUMAN, false)){
 
+			
+			Crouton.makeText(this, "A zombie killed you. You are now one of them!", Style.ALERT).show();
+		}
 	}
 
 	private void fixZoom() {
@@ -69,6 +75,9 @@ public class ZombieActivity extends CoreActivity {
 			ParseUser user = ParseUser.getCurrentUser();
 			ParseGeoPoint geo = user.getParseGeoPoint("location");
 		
+			if(geo == null){
+				return;
+			}
 			LatLng l = new LatLng((float) geo.getLatitude(), (float) geo.getLongitude());
 			Marker newMarker = map.addMarker(new MarkerOptions()
 			.position(l));
@@ -102,6 +111,9 @@ public class ZombieActivity extends CoreActivity {
 
 		Entities e = EntityManager.getInstance().getCurrentEntity();
 
+		if(e == null){
+			return;
+		}
 		double lat = e.getLat();
 		double longit = e.getLongit();
 		String id = e.getId();
@@ -124,21 +136,21 @@ public class ZombieActivity extends CoreActivity {
 		return true;
 	}
 	@Override
-	public void fillDataSwapEntity(Intent intent){
-		super.fillDataSwapEntity(intent);
+	public void fillDataKillHuman(Intent intent){
+		super.fillDataKillHuman(intent);
 		String id = intent.getStringExtra("ID");
 		if (listOfPoints.containsKey(id)) {
 			Marker markerToBeReplaced = listOfPoints.get(id);
 			markerToBeReplaced.remove();
 			listOfPoints.remove(id);
+			Crouton.makeText(this, "Someone got turned into a zombie", Style.ALERT).show();
 		}
 		
-		Crouton.makeText(this, "Someone got turned into a zombie", Style.ALERT).show();
-	
+		
+	//Log.i("Zombie person", id);
 	}
 	@Override
 	public void fillDataDisableZombie(Intent intent){
 		Crouton.makeText(this, "You are disabled.", Style.ALERT).show();
-		//TODO: 
 	}
 }

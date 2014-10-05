@@ -27,6 +27,13 @@ public class MainActivity extends Activity {
 
 		userObject = ParseUser.getCurrentUser();
 
+		if (userObject.getBoolean("setup") == true) {
+			if (userObject.getString("playerType").equals("Zombie")) {
+				launchZombie(null);
+			} else {
+				launchHuman(null);
+			}
+		}
 	}
 
 	@Override
@@ -44,9 +51,10 @@ public class MainActivity extends Activity {
 
 	public void launchHuman(View v) {
 		userObject.put("playerType", "Human");
+		userObject.put("setup", true);
 		userObject.saveInBackground();
 		
-		ParsePush.subscribeInBackground("user_" + ParseUser.getCurrentUser().getObjectId());
+		ParsePush.subscribeInBackground("user_" + userObject.getObjectId());
 		ParsePush.subscribeInBackground("Humans");
 		ParsePush.unsubscribeInBackground("Zombies");
 		Intent intent = new Intent(this, NormalHumanActivity.class);
@@ -55,9 +63,10 @@ public class MainActivity extends Activity {
 
 	public void launchZombie(View v) {
 		userObject.put("playerType", "Zombie");
+		userObject.put("setup", true);
 		userObject.saveInBackground();
 		
-		ParsePush.subscribeInBackground("user_" + ParseUser.getCurrentUser().getObjectId());
+		ParsePush.subscribeInBackground("user_" + userObject.getObjectId());
 		ParsePush.subscribeInBackground("Zombies");
 		ParsePush.unsubscribeInBackground("Humans");
 		Intent intent = new Intent(this, ZombieActivity.class);
