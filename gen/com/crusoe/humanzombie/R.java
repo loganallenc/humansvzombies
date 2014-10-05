@@ -431,6 +431,7 @@ containing a value of this type.
         public static final int monochrome=0x7f080013;
         public static final int none=0x7f080000;
         public static final int normal=0x7f080001;
+        public static final int normal_text=0x7f08001b;
         public static final int production=0x7f080007;
         public static final int sandbox=0x7f080008;
         public static final int satellite=0x7f080002;
@@ -446,6 +447,7 @@ containing a value of this type.
         public static final int activity_main=0x7f030000;
         public static final int google_maps_layout=0x7f030001;
         public static final int main=0x7f030002;
+        public static final int normal_human=0x7f030003;
     }
     public static final class raw {
         public static final int shotty=0x7f040000;

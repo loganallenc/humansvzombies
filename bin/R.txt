@@ -116,6 +116,7 @@ int id match_parent 0x7f08000c
 int id monochrome 0x7f080013
 int id none 0x7f080000
 int id normal 0x7f080001
+int id normal_text 0x7f08001b
 int id production 0x7f080007
 int id sandbox 0x7f080008
 int id satellite 0x7f080002
@@ -127,6 +128,7 @@ int integer google_play_services_version 0x7f090000
 int layout activity_main 0x7f030000
 int layout google_maps_layout 0x7f030001
 int layout main 0x7f030002
+int layout normal_human 0x7f030003
 int raw shotty 0x7f040000
 int string action_settings 0x7f07001c
 int string app_name 0x7f07001a

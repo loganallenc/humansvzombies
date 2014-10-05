@@ -1,15 +1,10 @@
 package com.crusoe.humanzombie;
 
 import com.crusoe.humanzombie.library.HeartRateValueController;
-import com.crusoe.humanzombie.library.HeartRateValueController.HeartStatus;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
 

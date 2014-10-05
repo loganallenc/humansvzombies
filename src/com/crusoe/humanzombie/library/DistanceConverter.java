@@ -1,7 +1,11 @@
 package com.crusoe.humanzombie.library;
 
 public class DistanceConverter{
-	public static float distFrom(float lat1, float lng1, float lat2, float lng2) {
+	
+	public static final int TOO_CLOSE = 15;
+	public static final int PROXIMITY = 75;
+	
+	public static float distFrom(double lat1, double lng1, double lat2, double lng2) {
 	    double earthRadius = 6371; //kilometers
 	    double dLat = Math.toRadians(lat2-lat1);
 	    double dLng = Math.toRadians(lng2-lng1);
@@ -12,5 +16,5 @@ public class DistanceConverter{
 	    float dist = (float) (earthRadius * c);
 
 	    return dist;
-	    }
+	}
 }

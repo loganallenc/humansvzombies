@@ -35,39 +35,8 @@ public class MainActivity extends Activity {
 
 		userObject = ParseUser.getCurrentUser();
 
-		//nearMe();
-	}
-/*
-	public void nearMe() {
-		GPSTracker gps = new GPSTracker(this);
-		double latitude = gps.getLatitude();
-		double longitude = gps.getLongitude();
-
-		geo = new ParseGeoPoint(latitude, longitude);
-
-		// geo = user.getParseGeoPoint("location");
-		userObject.put("location", geo);
-		userObject.saveEventually();
-
-		ParseQuery<ParseObject> query = ParseQuery.getQuery("location");
-		query.whereWithinMiles("location", geo, 0.5);
-		query.setLimit(10);
-		query.findInBackground(new FindCallback<ParseObject>() {
-
-			@Override
-			public void done(List<ParseObject> parseObjects, ParseException e) {
-				if (e == null) {
-					for (ParseObject p : parseObjects) {
-						Log.d("near", p.getObjectId());
-					}
-				} else {
-					System.out.println(e);
-				}
-			}
-		});
 	}
 
-*/
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -88,7 +57,7 @@ public class MainActivity extends Activity {
 		ParsePush.subscribeInBackground("user_" + ParseUser.getCurrentUser().getObjectId());
 		ParsePush.subscribeInBackground("Humans");
 		ParsePush.unsubscribeInBackground("Zombies");
-		Intent intent = new Intent(this, HumanActivity.class);
+		Intent intent = new Intent(this, NormalHumanActivity.class);
 		startActivity(intent);
 	}
 

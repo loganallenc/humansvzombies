@@ -1,18 +1,17 @@
 package com.crusoe.humanzombie;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
+import android.os.Vibrator;
 import android.view.MenuItem;
 
+import com.crusoe.humanzombie.library.Entities;
+import com.crusoe.humanzombie.library.EntityManager;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -20,6 +19,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseUser;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class ZombieActivity extends CoreActivity {
 
@@ -31,41 +35,28 @@ public class ZombieActivity extends CoreActivity {
 	public static final String MAP_UPDATE_INTENT_FILTER = "HUMAN_ACTIVITY_LOCATION_FILTER";
 	HashMap<String, Marker> listOfPoints = new HashMap<String, Marker>();
 
-	private BroadcastReceiver newDataSyncreceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-
-			fillData(intent);
-		}
-	};
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.google_maps_layout);
 
 		// set up action bar
-		getActionBar().setHomeButtonEnabled(true);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-		getActionBar().setDisplayShowHomeEnabled(false);
-		getActionBar().setDisplayShowTitleEnabled(true);
-
-		getActionBar().setTitle("Location");
-		getActionBar().setDisplayUseLogoEnabled(false);
+		
 
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
 
-		fillData(this.getIntent());
+		// fillData(this.getIntent());
 		map.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-		    @Override
-		    public void onMapLoaded() {
-		    	fixZoom();
-		    }
+			@Override
+			public void onMapLoaded() {
+				fixZoom();
+			}
 		});
-		
+
+		Bundle b = this.getIntent().getExtras();
+
 	}
-	
 
 	private void fixZoom() {
 		// List<LatLng> points = route.getPoints(); // route is instance of
@@ -74,17 +65,27 @@ public class ZombieActivity extends CoreActivity {
 		LatLngBounds.Builder bc = new LatLngBounds.Builder();
 		Marker m = null;
 		for (Map.Entry<String, Marker> entry : listOfPoints.entrySet()) {
-			 m = (Marker) entry.getValue();
+			m = (Marker) entry.getValue();
 			bc.include(m.getPosition());
 			counter++;
 
+		}
+		if(m == null){
+			ParseUser user = ParseUser.getCurrentUser();
+			ParseGeoPoint geo = user.getParseGeoPoint("location");
+		
+			LatLng l = new LatLng((float) geo.getLatitude(), (float) geo.getLongitude());
+			Marker newMarker = map.addMarker(new MarkerOptions()
+			.position(l));
+			listOfPoints.put("SELF", newMarker);
+			
+			m = newMarker;
 		}
 		if (counter > 0) {
 			map.moveCamera(CameraUpdateFactory.newLatLngBounds(bc.build(), 50));
 
 		} else {
-			map.moveCamera(CameraUpdateFactory
-					.newLatLngZoom(m.getPosition(), 8));
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(m.getPosition(), 15));
 
 		}
 	}
@@ -92,32 +93,25 @@ public class ZombieActivity extends CoreActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
-		LocalBroadcastManager.getInstance(this)
-				.registerReceiver(newDataSyncreceiver,
-						new IntentFilter(MAP_UPDATE_INTENT_FILTER));
+
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
 
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(
-				newDataSyncreceiver);
-
 	}
 
+	@Override
 	public void fillData(Intent intent) {
-		double lat = this.getIntent().getDoubleExtra(LAT_INTENT, 0);
-		double longit = this.getIntent().getDoubleExtra(LONG_INTENT, 0);
-		String id = this.getIntent().getStringExtra(ID_INTENT);
+
+		Entities e = EntityManager.getInstance().getCurrentEntity();
+
+		double lat = e.getLat();
+		double longit = e.getLongit();
+		String id = e.getId();
 
 		LatLng newLocation = new LatLng(lat, longit);
-		if (id == null) {
-			SimpleDateFormat dateFormat = new SimpleDateFormat(
-					"yyyy/MM/dd HH:mm:ss");
-			Date date = new Date();
-			id = dateFormat.format(date);
-		}
 
 		if (listOfPoints.containsKey(id)) {
 			Marker markerToBeReplaced = listOfPoints.get(id);
@@ -129,14 +123,28 @@ public class ZombieActivity extends CoreActivity {
 		listOfPoints.put(id, newMarker);
 	}
 
-	public void reloadMap() {
-
-	}
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		onBackPressed();
 		return true;
 	}
-
+	@Override
+	public void fillDataSwapEntity(Intent intent){
+		super.fillDataSwapEntity(intent);
+		String id = intent.getStringExtra("ID");
+		if (listOfPoints.containsKey(id)) {
+			Marker markerToBeReplaced = listOfPoints.get(id);
+			markerToBeReplaced.remove();
+			listOfPoints.remove(id);
+		}
+		
+		Crouton.makeText(this, "Someone got turned into a zombie", Style.ALERT).show();
+	
+	
+	}
+	@Override
+	public void fillDataDisableZombie(Intent intent){
+		Crouton.makeText(this, "You are disabled.", Style.ALERT).show();
+		//TODO: 
+	}
 }

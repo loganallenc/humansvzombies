@@ -24,12 +24,11 @@
         <TextView
             android:id="@+id/mainmenu_VS"
             style="@style/default_text_style"
-            android:text="VS"
-    android:layout_centerInParent="true" 
-    
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/buttonHuman" >
+            android:layout_below="@+id/buttonHuman"
+            android:layout_centerInParent="true"
+            android:text="VS" >
         </TextView>
 
         <Button
@@ -37,8 +36,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/mainmenu_VS"
-            android:background="@drawable/zombies_button"
-         />
+            android:onClick="launchZombie"
+            android:background="@drawable/zombies_button" />
     </RelativeLayout>
 
 </FrameLayout>
