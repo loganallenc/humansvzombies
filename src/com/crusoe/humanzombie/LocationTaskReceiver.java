@@ -26,6 +26,8 @@ public class LocationTaskReceiver extends BroadcastReceiver implements LocationL
 	ParseUser userObject;
 	ParseGeoPoint geoObject;
 	ParseQuery<ParseObject> query;
+	ParseGeoPoint geo;
+	GPSTracker gps;
 	
     @Override
     public void onReceive(Context arg0, Intent arg1) {
@@ -35,8 +37,26 @@ public class LocationTaskReceiver extends BroadcastReceiver implements LocationL
     	locationManager = (LocationManager) arg0.getSystemService(Context.LOCATION_SERVICE);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0,
 				0, this);
-		Log.i("LocationTaskReceiver", "Location Request");
+		//Log.i("LocationTaskReceiver", "Location Request");
+		
+		userObject = ParseUser.getCurrentUser();
+		
+		gps = new GPSTracker(arg0);
+		latitude = gps.getLatitude();
+		longitude = gps.getLongitude();
+		
+		geo = new ParseGeoPoint(latitude, longitude);
+
+		Log.d("geo", Double.toString(geo.getLatitude()));
+		Log.d("geo", Double.toString(geo.getLongitude()));
+		
+		userObject.put("location", geo);
+		userObject.saveInBackground();
+		findUsersInRadius(0.5);
+
     }
+    LocationManager mLocationManager;
+   
     
     @Override
 	public void onLocationChanged(Location location) {
@@ -48,20 +68,19 @@ public class LocationTaskReceiver extends BroadcastReceiver implements LocationL
 		Log.i("Latitude", Double.toString(latitude));
 		Log.i("Longitude", Double.toString(longitude));
 		
-		geoObject = new ParseGeoPoint(latitude, longitude);
+		/*geoObject = new ParseGeoPoint(latitude, longitude);
 
 		userObject.put("location", geoObject);
-		userObject.saveEventually();
+		userObject.saveEventually();*/
 		
-		findUsersInRadius(0.5);
+		//findUsersInRadius(0.5);
 	}
 	
 	public void findUsersInRadius(double radius) {
-		ParseQuery.clearAllCachedResults();
 		
 		query = ParseQuery.getQuery("Users");
 		query.setLimit(10);
-		query.whereWithinMiles("location", geoObject, radius);
+		query.whereWithinMiles("location", geo, radius);
 
 		query.findInBackground(new FindCallback<ParseObject>() {
 
@@ -109,5 +128,5 @@ public class LocationTaskReceiver extends BroadcastReceiver implements LocationL
 		// TODO Auto-generated method stub
 		
 	}
-
+	 
 }

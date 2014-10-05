@@ -44,7 +44,7 @@ public abstract class CoreActivity extends Activity {
 	public void onPause() {
 		super.onPause();
 		cancelLocationFetch();
-		startLocationFetch(1000 * 30);
+		startLocationFetch(1000 * 3);
 		
 		cancelBeating();
 startBeating(1000);

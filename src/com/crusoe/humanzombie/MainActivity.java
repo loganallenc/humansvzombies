@@ -82,6 +82,9 @@ public class MainActivity extends Activity {
 	}
 
 	public void launchHuman(View v) {
+		userObject.put("playerType", "Human");
+		userObject.saveEventually();
+		
 		ParsePush.subscribeInBackground("user_" + ParseUser.getCurrentUser().getObjectId());
 		ParsePush.subscribeInBackground("Humans");
 		ParsePush.unsubscribeInBackground("Zombies");
@@ -90,6 +93,9 @@ public class MainActivity extends Activity {
 	}
 
 	public void launchZombie(View v) {
+		userObject.put("playerType", "Zombie");
+		userObject.saveEventually();
+		
 		ParsePush.subscribeInBackground("user_" + ParseUser.getCurrentUser().getObjectId());
 		ParsePush.subscribeInBackground("Zombies");
 		ParsePush.unsubscribeInBackground("Humans");
